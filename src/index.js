@@ -4,12 +4,22 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+import { configureStore } from '@reduxjs/toolkit';
+import { Provider } from 'react-redux';
+import { combineReducers } from 'redux';
+
+// import filtersReducer from './slices/filters';
+
+const rootReducer = combineReducers({
+  // filters: filtersReducer,
+  // modal: modalReducer,
+  // cards: cardsReducer,
+  // albums: albumsReducer,
+});
+
+const store = configureStore({ reducer: rootReducer });
+
+ReactDOM.render(<Provider store={store}> <App /> </Provider>, document.getElementById('root'));
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

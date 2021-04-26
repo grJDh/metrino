@@ -8,13 +8,12 @@ import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import { combineReducers } from 'redux';
 
-// import filtersReducer from './slices/filters';
+import mapReducer from './slices/map';
+import metrinoReducer from './slices/metrino';
 
 const rootReducer = combineReducers({
-  // filters: filtersReducer,
-  // modal: modalReducer,
-  // cards: cardsReducer,
-  // albums: albumsReducer,
+  map: mapReducer,
+  metrino: metrinoReducer,
 });
 
 const store = configureStore({ reducer: rootReducer });

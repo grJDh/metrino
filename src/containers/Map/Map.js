@@ -1,10 +1,11 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 import Station from '../../parts/Station';
+// import Rail from '../../parts/Rail';
 
 // import { mapSelector } from '../../slices/map';
-import { metrinoSelector } from '../../slices/metrino';
+import { metrinoSelector, removeStation } from '../../slices/metrino';
 
 import styled from 'styled-components';
 
@@ -13,14 +14,17 @@ const Wrapper = styled.div`
 `;
 
 const Map = ({currentZoom, img}) => {
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
   const { stationsList } = useSelector(metrinoSelector);
+
+  const onRemoveStation = index => dispatch(removeStation(index));
  
   return (
     <Wrapper currentZoom={currentZoom}>
       <svg xmlns="http://www.w3.org/2000/svg">
-        {stationsList.map((coords, i) => <Station coords={coords} key={i}/>)}
+        {stationsList.map((coords, i) => <Station coords={coords} key={i} index={i} onRemoveStation={onRemoveStation} />)}
+        {/* {(stationsList.length > 1) && <Rail stationsList={stationsList} />} */}
       </svg>
       <img src={img.src} alt="map" />
     </Wrapper>

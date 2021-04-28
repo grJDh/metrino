@@ -12,3 +12,7 @@ const App = () => {
 }
 
 export default App;
+
+// menu and modes
+// place station mode
+// place rails mode

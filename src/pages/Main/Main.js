@@ -66,7 +66,7 @@ const Main = () => {
   };
 
   useEffect(() => {
-    window.addEventListener("click", placeStation);
+    // window.addEventListener("click", placeStation);
     // window.addEventListener("wheel", mapZoom);
     window.addEventListener("contextmenu", () => {return false});
   
@@ -92,7 +92,7 @@ const Main = () => {
       </Zooms>
       <Draggable
         allowAnyClick={true}
-        axis="both"
+        axis="none"
         bounds={{top: -img.height + window.innerHeight, left: -img.width + window.innerWidth, bottom: 0, right: 0}}
         onStop={onStop}
       >

@@ -1,9 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 export const initialState = {
-  mode: "rails",
+  mode: "look",
 
-  stationsList: [[500, 500]],
+  stationsList: [[500, 250]],
 
   railsList: [],
 

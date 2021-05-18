@@ -3,11 +3,24 @@ import { createSlice } from '@reduxjs/toolkit';
 export const initialState = {
   mode: "look",
 
-  stationsList: [[500, 250]],
+  stationsList: {
+  "idaho": {
+    coords: [500, 250]
+  },
+  "california": {
+    coords: [250, 500]
+  }
+  },
 
-  railsList: [],
+  railsList: [
+    {
+      from: "idaho",
+      to: "california",
+      path: []
+    }
+  ],
 
-  startStation: [500, 500],
+  startStation: "",
   currentRail: [],
 }
 
@@ -21,21 +34,39 @@ const metrinoSlice = createSlice({
 
     addStation: (state, { payload }) => {
       state.stationsList = 
-      [...state.stationsList, payload];
+      {...state.stationsList,
+      [payload[0]]: {
+        coords: payload[1]
+      }}
     },
     removeStation: (state, { payload }) => {
       state.stationsList = state.stationsList.filter((coords, i) => i !== payload);
     },
 
+    setStartStation: (state, { payload }) => {
+      state.startStation = payload;
+    },
     addRail: (state, { payload }) => {
       state.currentRail = 
       [...state.currentRail, payload];
+    },
+    endCurrenRail: (state, { payload }) => {
+      state.railsList = [...state.railsList,
+      {
+        from: state.startStation,
+        to: payload,
+        path: state.currentRail
+      }
+      ];
+
+      state.startStation = "";
+      state.currentRail = [];
     },
   }
 });
 
 export const { setMode, addStation, removeStation,
-               addRail } = metrinoSlice.actions;
+               setStartStation, addRail, endCurrenRail } = metrinoSlice.actions;
 
 export const metrinoSelector = state => state.metrino;
 

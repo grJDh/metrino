@@ -1,7 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 export const initialState = {
-  mapSrc: "https://i.imgur.com/i2UZajE.jpg",
+  // mapSrc: "https://i.imgur.com/i2UZajE.jpg",
+  mapSrc: "https://gisgeography.com/wp-content/uploads/2020/07/US-Hillshade-Map-scaled.jpg",
 
   delta: {x: 0, y: 0},
 

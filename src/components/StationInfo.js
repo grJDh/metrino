@@ -15,12 +15,13 @@ const Wrapper= styled.div`
   top: ${props => props.top}px;
 `;
 
-const StationInfo = ({ index, coords }) => {
+const StationInfo = ({ name, coords, onSetStartStation, onEndCurrenRail, mode, startStation }) => {
 
   return (
     <Wrapper left={coords[0]} top={coords[1]} >
-      {index}
-      <button >Start new rails from here</button>
+      {name}
+      {(mode === "look") && <button onClick={() => onSetStartStation(name)}>Start new rails</button>}
+      {(mode === "rails" && name !== startStation) && <button onClick={() => onEndCurrenRail(name)}>End rails</button>}
     </Wrapper>
   );
 }

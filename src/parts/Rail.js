@@ -1,26 +1,29 @@
 import React from 'react';
 
-const Rail = ({ startStation, currentRail }) => {
+const Rail = ({ mode, startStation, railPath, endStation }) => {
 
-  // const lol = currentRail.slice(1);
-  // console.log(lol)
+  const from = startStation[0] + " " + startStation[1];
 
-  const to = currentRail.reduce((toString, station) => {
-    // console.log('toString', toString);
-    // console.log('station', station);
-    return toString + " L " + station[0] + " " + station[1];
+  const path = railPath.reduce((toString, station) => {
+    return toString + ", " + station[0] + " " + station[1];
   }, "");
 
-  const from = "M " + startStation[0] + " " + startStation[1];
-  // const to = " L " + currentRail[0][0] + " " + currentRail[0][1];
-
-  // console.log(from)
-  // console.log(to)
+  const fullPath = () => {
+    switch (mode) {
+      case "current":
+        return from + path;
+      case "done":
+        const to = ", " + endStation[0] + " " + endStation[1];
+        return from + path + to;
+      default:
+        console.log("Problem!");
+    }
+  } 
 
   return (
     <>
-      {currentRail.map((coords, i) => <circle cx={coords[0].toString()} cy={coords[1].toString()} r="5" fill="orange" key={i} />)}
-      <path d={from + to} fill="transparent" stroke="red"/>
+      {railPath.map((coords, i) => <circle cx={coords[0].toString()} cy={coords[1].toString()} r="5" fill="orange" key={i} />)}
+      <polyline points={fullPath()} fill="transparent" stroke="red"/>
     </>
   );
 }

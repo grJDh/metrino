@@ -16,7 +16,8 @@ export const initialState = {
     {
       from: "idaho",
       to: "california",
-      path: []
+      path: [],
+      dist: 353.55,
     }
   ],
 
@@ -54,8 +55,9 @@ const metrinoSlice = createSlice({
       state.railsList = [...state.railsList,
       {
         from: state.startStation,
-        to: payload,
-        path: state.currentRail
+        to: payload[0],
+        path: state.currentRail,
+        dist: payload[1]
       }
       ];
 

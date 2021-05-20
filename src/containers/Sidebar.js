@@ -29,7 +29,6 @@ const Sidebar = () => {
   // ];
 
   const onSetZoom = num => dispatch(setZoom(num));
-
   const onSetMode = mode => dispatch(setMode(mode));
 
   return (

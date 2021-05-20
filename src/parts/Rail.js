@@ -4,8 +4,8 @@ const Rail = ({ mode, startStation, railPath, endStation }) => {
 
   const from = startStation[0] + " " + startStation[1];
 
-  const path = railPath.reduce((toString, station) => {
-    return toString + ", " + station[0] + " " + station[1];
+  const path = railPath.reduce((accum, station) => {
+    return accum + ", " + station[0] + " " + station[1];
   }, "");
 
   const fullPath = () => {

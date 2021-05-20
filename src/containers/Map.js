@@ -64,7 +64,22 @@ const Map = ({ img }) => {
   }
 
   const onEndCurrenRail = name => {
-    dispatch(endCurrenRail(name));
+
+    const path = [stationsList[startStation].coords, ...currentRail, stationsList[name].coords]
+
+    console.log(path)
+
+    const dist = path.reduce((accum, stationA, i) => {
+      console.log(accum, stationA, path[i+1], i)
+      if (i < path.length - 1) {
+        const stationB = path[i+1];
+        const currentDist = Math.floor(Math.sqrt((Math.pow(stationB[0] - stationA[0],2) + Math.pow(stationB[1] - stationA[1],2))) * 100) / 100;
+
+        return accum + currentDist;
+      } else return accum;
+    }, 0);
+
+    dispatch(endCurrenRail([name, dist]));
     dispatch(setMode("look"));
     setStationInfoName("");
   }

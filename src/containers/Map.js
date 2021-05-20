@@ -3,10 +3,11 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import Station from '../parts/Station';
 import Rail from '../parts/Rail';
+import MouseRail from '../parts/MouseRail';
 import StationInfo from '../components/StationInfo';
 
 import { mapSelector } from '../slices/map';
-import { setMode, metrinoSelector, addStation, setStartStation, addRail, endCurrenRail } from '../slices/metrino';
+import { metrinoSelector, setMode, addStation, setStartStation, addRail, endCurrenRail, deleteStation, clearRail } from '../slices/metrino';
 
 import styled from 'styled-components';
 
@@ -22,6 +23,7 @@ const Map = ({ img }) => {
   const { delta, zoom } = useSelector(mapSelector);
 
   const [stationInfoName, setStationInfoName] = useState("");
+  const [mouseCoords, setMouseCoords] = useState([]);
 
   const onStationClick = name => {
     setStationInfoName(name);
@@ -30,31 +32,39 @@ const Map = ({ img }) => {
   const onMapClick = event => {
 
     if (event.target.tagName === "svg" || event.target.tagName === "polyline") {
+      setStationInfoName("");
+
       if (mode === "rails") {
         dispatch(addRail(
           [event.clientX - delta.x,
           event.clientY - delta.y]
         ));
       }
-    }
-    
-    if (event.target.tagName === "svg") {
-      if (mode === "look") {
-        setStationInfoName("");
-      }
+
+      // if (mode === "look") {
+        
+      // }
 
       if (mode === "stations") {
         const name = prompt("Enter station name");
-
-        dispatch(addStation([
-          name,
-          [event.clientX - delta.x,
-          event.clientY - delta.y]
-        ]));
+        
+        if (name !== null) {
+          dispatch(addStation([
+            name,
+            [event.clientX - delta.x,
+            event.clientY - delta.y]
+          ]));
+        }
 
         dispatch(setMode("look"));
       }
     }
+  }
+
+  const onMouseMove = event => {
+    setMouseCoords(
+      [event.clientX - delta.x,
+      event.clientY - delta.y]);
   }
 
   const onSetStartStation = name => {
@@ -64,24 +74,18 @@ const Map = ({ img }) => {
   }
 
   const onEndCurrenRail = name => {
-
-    const path = [stationsList[startStation].coords, ...currentRail, stationsList[name].coords]
-
-    console.log(path)
-
-    const dist = path.reduce((accum, stationA, i) => {
-      console.log(accum, stationA, path[i+1], i)
-      if (i < path.length - 1) {
-        const stationB = path[i+1];
-        const currentDist = Math.floor(Math.sqrt((Math.pow(stationB[0] - stationA[0],2) + Math.pow(stationB[1] - stationA[1],2))) * 100) / 100;
-
-        return accum + currentDist;
-      } else return accum;
-    }, 0);
-
-    dispatch(endCurrenRail([name, dist]));
+    dispatch(endCurrenRail(name));
     dispatch(setMode("look"));
+    dispatch(setStartStation(""));
+    dispatch(clearRail());
     setStationInfoName("");
+  }
+
+  const onDeleteStation = name => {
+    if (window.confirm("Are you sure you want to delete this station? This action cannot be undone!")) {
+      setStationInfoName("");
+      dispatch(deleteStation(name));
+    }
   }
  
   return (
@@ -90,13 +94,14 @@ const Map = ({ img }) => {
         <StationInfo
           name={stationInfoName}
           coords={stationsList[stationInfoName].coords}
+          mode={mode}
           onSetStartStation={onSetStartStation}
           onEndCurrenRail={onEndCurrenRail}
-          mode={mode}
           startStation={startStation}
+          onDeleteStation={onDeleteStation}
         /> : ""}
 
-      <svg xmlns="http://www.w3.org/2000/svg" onClick={onMapClick} >
+      <svg xmlns="http://www.w3.org/2000/svg" onClick={onMapClick} onMouseMove={(event) => onMouseMove(event)} >
         {Object.keys(stationsList).map(stationName =>
         <Station key={stationName} station={stationsList[stationName]} name={stationName} onFunc={onStationClick} />)}
         
@@ -108,8 +113,20 @@ const Map = ({ img }) => {
           railPath={railPath.path}
           endStation={stationsList[railPath.to].coords}
         />)}
+
+        {(startStation) ?
+        <MouseRail
+          lastPoint={(currentRail.length) ? currentRail[currentRail.length-1] : stationsList[startStation].coords}
+          mousePoint={mouseCoords}
+        /> : ""}
         
-        {(currentRail.length) ? <Rail mode="current" startStation={stationsList[startStation].coords} railPath={currentRail} /> : ""}
+        {(currentRail.length) ?
+        <Rail
+          mode="current"
+          startStation={stationsList[startStation].coords}
+          railPath={currentRail}
+        /> : ""}
+
       </svg>
 
       <img src={img.src} alt="map"/>

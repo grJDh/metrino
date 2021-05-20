@@ -16,13 +16,13 @@ const Rail = ({ mode, startStation, railPath, endStation }) => {
         const to = ", " + endStation[0] + " " + endStation[1];
         return from + path + to;
       default:
-        console.log("Problem!");
+        console.log("Unkown mode in rail from " + startStation + " to " + endStation);
     }
   } 
 
   return (
     <>
-      {railPath.map((coords, i) => <circle cx={coords[0].toString()} cy={coords[1].toString()} r="5" fill="orange" key={i} />)}
+      {/* {(mode !== "done") && railPath.map((coords, i) => <circle cx={coords[0].toString()} cy={coords[1].toString()} r="5" fill="orange" key={i} />)} */}
       <polyline points={fullPath()} fill="transparent" stroke="red"/>
     </>
   );

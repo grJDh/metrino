@@ -40,8 +40,16 @@ const metrinoSlice = createSlice({
         coords: payload[1]
       }}
     },
-    removeStation: (state, { payload }) => {
-      state.stationsList = state.stationsList.filter((coords, i) => i !== payload);
+    deleteStation: (state, { payload }) => {
+      //removing station from stationsList
+      const { [payload]:omit, ...updatedStationsList } = state.stationsList;
+      state.stationsList = updatedStationsList;
+
+      //removing all rails connected to station from railsList
+      state.railsList = state.railsList.filter((rail, i) => {
+        if (rail.from === payload || rail.to === payload) return false
+        else return true
+      });
     },
 
     setStartStation: (state, { payload }) => {
@@ -52,23 +60,36 @@ const metrinoSlice = createSlice({
       [...state.currentRail, payload];
     },
     endCurrenRail: (state, { payload }) => {
+      //calculating disdtance between stations 
+      const path = [state.stationsList[state.startStation].coords, ...state.currentRail, state.stationsList[payload].coords];
+
+      const distance = path.reduce((accum, stationA, i) => {
+        if (i < path.length - 1) {
+          const stationB = path[i+1];
+          const currentDist = Math.floor(Math.sqrt((Math.pow(stationB[0] - stationA[0],2) + Math.pow(stationB[1] - stationA[1],2))) * 100) / 100;
+
+          return accum + currentDist;
+        } else return accum;
+      }, 0);
+
+      //finialzing rails between stations
       state.railsList = [...state.railsList,
       {
         from: state.startStation,
-        to: payload[0],
+        to: payload,
         path: state.currentRail,
-        dist: payload[1]
+        dist: distance
       }
       ];
-
-      state.startStation = "";
+    },
+    clearRail: state => {
       state.currentRail = [];
     },
   }
 });
 
-export const { setMode, addStation, removeStation,
-               setStartStation, addRail, endCurrenRail } = metrinoSlice.actions;
+export const { setMode, addStation, deleteStation,
+               setStartStation, addRail, endCurrenRail, clearRail } = metrinoSlice.actions;
 
 export const metrinoSelector = state => state.metrino;
 

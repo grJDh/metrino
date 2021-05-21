@@ -1,30 +1,27 @@
 import React from 'react';
 
-const Rail = ({ mode, startStation, railPath, endStation }) => {
+const Rail = ({ startStation, startStationName, railPath, endStation, endStationName, onDeleteRail }) => {
 
-  const from = startStation[0] + " " + startStation[1];
+  const railPathFull = (endStation) ? [startStation, ...railPath, endStation] : [startStation, ...railPath];
 
-  const path = railPath.reduce((accum, station) => {
-    return accum + ", " + station[0] + " " + station[1];
+  const linesArray = railPathFull.reduce((acc, coords, i) => {
+    if (i < railPathFull.length-1) return [...acc, [coords, railPathFull[i+1]]];
+    else return acc;
   }, "");
-
-  const fullPath = () => {
-    switch (mode) {
-      case "current":
-        return from + path;
-      case "done":
-        const to = ", " + endStation[0] + " " + endStation[1];
-        return from + path + to;
-      default:
-        console.log("Unkown mode in rail from " + startStation + " to " + endStation);
-    }
-  } 
 
   return (
     <>
-      {/* {(mode !== "done") && railPath.map((coords, i) => <circle cx={coords[0].toString()} cy={coords[1].toString()} r="5" fill="orange" key={i} />)} */}
-      <polyline points={fullPath()} fill="transparent" stroke="red"/>
+      {linesArray.map(line => 
+        <line
+          x1={line[0][0]}
+          y1={line[0][1]}
+          x2={line[1][0]}
+          y2={line[1][1]}
+          stroke="red"
+          key={line[0][0]+line[0][1]+line[1][0]+line[1][1]}
+      />)}
     </>
+    
   );
 }
 

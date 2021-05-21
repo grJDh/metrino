@@ -7,7 +7,10 @@ import MouseRail from '../parts/MouseRail';
 import StationInfo from '../components/StationInfo';
 
 import { mapSelector } from '../slices/map';
-import { metrinoSelector, setMode, addStation, setStartStation, addRail, endCurrenRail, deleteStation, clearRail } from '../slices/metrino';
+import { metrinoSelector,
+         setMode,
+         addStation, deleteStation,
+         setStartStation, addRail, deleteLastRail, endCurrenRail, clearRail } from '../slices/metrino';
 
 import styled from 'styled-components';
 
@@ -23,7 +26,7 @@ const Map = ({ img }) => {
   const { delta, zoom } = useSelector(mapSelector);
 
   const [stationInfoName, setStationInfoName] = useState("");
-  const [mouseCoords, setMouseCoords] = useState([]);
+  const [mouseCoords, setMouseCoords] = useState([0, 0]);
 
   const onStationClick = name => {
     setStationInfoName(name);
@@ -31,7 +34,9 @@ const Map = ({ img }) => {
   
   const onMapClick = event => {
 
-    if (event.target.tagName === "svg" || event.target.tagName === "polyline") {
+    // console.log(event)
+
+    if (event.target.tagName === "svg" || event.target.tagName === "path") {
       setStationInfoName("");
 
       if (mode === "rails") {
@@ -61,10 +66,20 @@ const Map = ({ img }) => {
     }
   }
 
+  const onMapContextMenu = event => {
+    event.preventDefault();
+
+    if (mode === "rails") {
+      dispatch(deleteLastRail());
+    }
+  }
+
   const onMouseMove = event => {
-    setMouseCoords(
-      [event.clientX - delta.x,
-      event.clientY - delta.y]);
+    if (mode === "rails") {
+      setMouseCoords(
+        [event.clientX - delta.x,
+        event.clientY - delta.y]);
+    }
   }
 
   const onSetStartStation = name => {
@@ -87,6 +102,10 @@ const Map = ({ img }) => {
       dispatch(deleteStation(name));
     }
   }
+
+  const onDeleteRail = obj => {
+    console.log(obj)
+  }
  
   return (
     <Wrapper zoom={zoom}>
@@ -101,17 +120,19 @@ const Map = ({ img }) => {
           onDeleteStation={onDeleteStation}
         /> : ""}
 
-      <svg xmlns="http://www.w3.org/2000/svg" onClick={onMapClick} onMouseMove={(event) => onMouseMove(event)} >
+      <svg xmlns="http://www.w3.org/2000/svg" onClick={onMapClick} onContextMenu={onMapContextMenu} onMouseMove={(event) => onMouseMove(event)} >
         {Object.keys(stationsList).map(stationName =>
         <Station key={stationName} station={stationsList[stationName]} name={stationName} onFunc={onStationClick} />)}
         
         {railsList.map(railPath =>
         <Rail
           key={railPath.from+railPath.path+railPath.to}
-          mode="done"
           startStation={stationsList[railPath.from].coords}
+          startStationName={railPath.from}
           railPath={railPath.path}
           endStation={stationsList[railPath.to].coords}
+          endStationName={railPath.to}
+          onDeleteRail={onDeleteRail}
         />)}
 
         {(startStation) ?
@@ -122,7 +143,6 @@ const Map = ({ img }) => {
         
         {(currentRail.length) ?
         <Rail
-          mode="current"
           startStation={stationsList[startStation].coords}
           railPath={currentRail}
         /> : ""}

@@ -59,8 +59,11 @@ const metrinoSlice = createSlice({
       state.currentRail = 
       [...state.currentRail, payload];
     },
+    deleteLastRail: state => {
+      state.currentRail = state.currentRail.slice(0,-1);
+    },
     endCurrenRail: (state, { payload }) => {
-      //calculating disdtance between stations 
+      //calculating distance between stations 
       const path = [state.stationsList[state.startStation].coords, ...state.currentRail, state.stationsList[payload].coords];
 
       const distance = path.reduce((accum, stationA, i) => {
@@ -89,7 +92,7 @@ const metrinoSlice = createSlice({
 });
 
 export const { setMode, addStation, deleteStation,
-               setStartStation, addRail, endCurrenRail, clearRail } = metrinoSlice.actions;
+               setStartStation, addRail, deleteLastRail, endCurrenRail, clearRail } = metrinoSlice.actions;
 
 export const metrinoSelector = state => state.metrino;
 
